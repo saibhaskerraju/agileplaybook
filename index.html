@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agile AI Delivery Playbook</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      /* Material Design 3 / Google AI Premium Color Tokens */
+      --md-sys-color-background: #0f131c;
+      --md-sys-color-surface: rgba(255, 255, 255, 0.04);
+      --md-sys-color-surface-hover: rgba(255, 255, 255, 0.08);
+      --md-sys-color-surface-border: rgba(255, 255, 255, 0.08);
+      
+      --md-sys-color-on-background: #e3e8f0;
+      --md-sys-color-muted: #94a3b8;
+      
+      /* Google AI Accent Palette */
+      --google-blue: #a8c7fa;
+      --google-blue-container: #0b57d0;
+      --google-purple: #c77dff;
+      --google-teal: #70e000;
+      
+      /* Material 3 Radii */
+      --radius-card: 28px;
+      --radius-pill: 100px;
+      --radius-phase: 20px;
+      
+      /* Motion Easing */
+      --m3-easing: cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    * { box-sizing: border-box; }
+    
+    html, body {
+      margin: 0;
+      height: 100%;
+      background-color: var(--md-sys-color-background);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      color: var(--md-sys-color-on-background);
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Ambient Google AI Floating Mesh Blur */
+    body::before, body::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::before {
+      width: 650px;
+      height: 650px;
+      background: radial-gradient(circle, #4285f4 0%, #9b51e0 100%);
+      top: -10%;
+      left: -10%;
+      animation: floatA 20s infinite alternate ease-in-out;
+    }
+
+    body::after {
+      width: 750px;
+      height: 750px;
+      background: radial-gradient(circle, #70e000 0%, #00b4d8 100%);
+      bottom: -15%;
+      right: -10%;
+      animation: floatB 25s infinite alternate ease-in-out;
+    }
+
+    @keyframes floatA {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(150px, 100px) scale(1.2); }
+    }
+
+    @keyframes floatB {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-120px, -80px) scale(1.15); }
+    }
+
+    .deck {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      z-index: 1;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.92) translateY(24px);
+      filter: blur(8px);
+      transition: 
+        opacity 0.6s var(--m3-easing), 
+        transform 0.6s var(--m3-easing),
+        filter 0.6s var(--m3-easing);
+      background: transparent;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1) translateY(0);
+      filter: blur(0);
+    }
+
+    .layout {
+      width: 100%;
+      height: 100%;
+      display: flex;
+    }
+
+    .content {
+      flex: 1;
+      padding: 50px 80px 80px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      overflow-y: auto;
+    }
+
+    .flow {
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      margin-bottom: 24px;
+    }
+
+    .timeline {
+      position: relative;
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(8, minmax(80px, 1fr));
+      align-items: center;
+      gap: 12px;
+      z-index: 1;
+    }
+
+    .phase {
+      position: relative;
+      z-index: 1;
+      height: 84px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8px;
+      border-radius: var(--radius-phase);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--md-sys-color-surface-border);
+      color: var(--md-sys-color-on-background);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s var(--m3-easing);
+      user-select: none;
+    }
+
+    .clickable-node {
+      cursor: pointer;
+    }
+
+    .phase:hover {
+      transform: translateY(-4px);
+      background: var(--md-sys-color-surface-hover);
+      border-color: rgba(168, 199, 250, 0.5);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Active Highlighted Phase Node */
+    .phase.bump {
+      background: linear-gradient(135deg, #a8c7fa 0%, #c77dff 100%);
+      border-color: transparent;
+      color: #041e49;
+      box-shadow: 0 8px 32px rgba(168, 199, 250, 0.35);
+    }
+
+    .phase.bump small {
+      color: #041e49;
+      opacity: 0.85;
+    }
+
+    .phase small {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      color: var(--google-blue);
+      margin-bottom: 2px;
+      font-weight: 800;
+    }
+
+    .detail-wrap {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--google-blue);
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .eyebrow i {
+      font-size: 0.9rem;
+    }
+
+    .eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--google-blue);
+      box-shadow: 0 0 12px var(--google-blue);
+    }
+
+    .headline {
+      margin: 0;
+      font-size: clamp(2.2rem, 4.2vw, 4.2rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 0%, #a8c7fa 50%, #c77dff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle-badge {
+      display: inline-block;
+      font-size: 0.82rem;
+      color: var(--google-purple);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+    }
+
+    .description {
+      margin: 0;
+      font-size: clamp(1.05rem, 1.35vw, 1.3rem);
+      line-height: 1.6;
+      color: var(--md-sys-color-muted);
+      max-width: 850px;
+      font-weight: 500;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      border: 1px solid var(--md-sys-color-surface-border);
+      background: var(--md-sys-color-surface);
+      border-radius: var(--radius-card);
+      padding: 28px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      transition: transform 0.4s var(--m3-easing), background 0.4s var(--m3-easing), border-color 0.4s var(--m3-easing), box-shadow 0.4s var(--m3-easing);
+    }
+
+    .card:hover {
+      background: var(--md-sys-color-surface-hover);
+      border-color: rgba(168, 199, 250, 0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .card h3 {
+      margin: 0 0 14px;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--google-blue);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card ul {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 1.02rem;
+      line-height: 1.7;
+      color: var(--md-sys-color-on-background);
+      font-weight: 500;
+    }
+
+    .card ul li {
+      margin-bottom: 8px;
+    }
+
+    .card ul li:last-child {
+      margin-bottom: 0;
+    }
+
+    .card ul li::marker {
+      color: var(--google-blue);
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      padding: 9px 18px;
+      border-radius: var(--radius-pill);
+      background: rgba(168, 199, 250, 0.08);
+      border: 1px solid rgba(168, 199, 250, 0.25);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--google-blue);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s var(--m3-easing);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chip:hover {
+      background: rgba(168, 199, 250, 0.2);
+      transform: scale(1.03);
+      color: #fff;
+    }
+
+    .progress {
+      position: absolute;
+      left: 40px;
+      bottom: 28px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--md-sys-color-muted);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .controls {
+      position: absolute;
+      right: 40px;
+      bottom: 28px;
+      display: flex;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    button {
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--md-sys-color-on-background);
+      padding: 12px 24px;
+      border-radius: var(--radius-pill);
+      font-size: 0.9rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      backdrop-filter: blur(16px);
+      transition: all 0.3s var(--m3-easing);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    button:hover {
+      background: var(--google-blue);
+      color: #041e49;
+      border-color: var(--google-blue);
+      box-shadow: 0 8px 24px rgba(168, 199, 250, 0.3);
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    @media (max-width: 900px) {
+      .layout { flex-direction: column; }
+      .content { padding: 24px 20px 80px; }
+      .timeline {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+      .controls {
+        right: 20px;
+        bottom: 20px;
+      }
+      .progress {
+        left: 20px;
+        bottom: 20px;
+      }
+      button {
+        padding: 10px 18px;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck">
+
+    <!-- SLIDE 01: TITLE / COVER SLIDE -->
+    <section class="slide active">
+      <div class="layout">
+        <div class="content">
+          <div class="detail-wrap">
+            <div class="eyebrow"><i class="fa-solid fa-sparkles"></i> PRACTICAL AI DELIVERY</div>
+            <h1 class="headline" style="font-size: clamp(2.8rem, 5vw, 5.2rem);">AGILE AI DELIVERY PLAYBOOK</h1>
+            <p class="description" style="font-size: clamp(1.15rem, 1.6vw, 1.45rem); max-width: 860px;">
+              A step-by-step practical guide to designing, building, and launching AI solutions that solve real business problems safely, clearly, and effectively.
+            </p>
+            <div class="grid" style="margin-top: 10px;">
+              <div class="card">
+                <h3><i class="fa-solid fa-heart"></i> Our Core Promise</h3>
+                <ul>
+                  <li><strong>Human First:</strong> AI built to support people, not replace good judgment.</li>
+                  <li><strong>No Technical Jargon:</strong> Clear language so everyone stays on the same page.</li>
+                  <li><strong>Safe &amp; Reliable:</strong> Rigorous data privacy, security, and safety guardrails.</li>
+                  <li><strong>Step-by-Step Quality:</strong> Continuous testing and refinement with real users.</li>
+                </ul>
+              </div>
+              <div class="card">
+                <h3><i class="fa-solid fa-compass"></i> What You Will Find Inside</h3>
+                <div class="chip-row">
+                  <span class="chip"><i class="fa-solid fa-route"></i> 8 Clear Milestones</span>
+                  <span class="chip"><i class="fa-solid fa-users"></i> Real User Feedback</span>
+                  <span class="chip"><i class="fa-solid fa-shield-halved"></i> Data Safety First</span>
+                  <span class="chip"><i class="fa-solid fa-comments"></i> Everyday Language</span>
+                  <span class="chip"><i class="fa-solid fa-sliders"></i> Continuous Improvement</span>
+                  <span class="chip"><i class="fa-solid fa-handshake-angle"></i> Full Team Support</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 02: PROCESS FLOW OVERVIEW SLIDE -->
+    <section class="slide">
+      <div class="layout">
+        <div class="content">
+          <div class="detail-wrap">
+            <div class="eyebrow"><i class="fa-solid fa-route"></i> HOW WE WORK TOGETHER</div>
+            <h1 class="headline">THE DELIVERY JOURNEY</h1>
+            <p class="description">An 8-step roadmap created to take your AI idea from an initial concept all the way to a trusted, everyday business tool.</p>
+            
+            <div class="flow">
+              <div class="timeline">
+                <div class="phase clickable-node" data-target-slide="2"><div><small>01</small>GET STARTED</div></div>
+                <div class="phase clickable-node" data-target-slide="3"><div><small>02</small>UNDERSTAND</div></div>
+                <div class="phase clickable-node" data-target-slide="4"><div><small>03</small>DESIGN</div></div>
+                <div class="phase clickable-node" data-target-slide="5"><div><small>04</small>BUILD</div></div>
+                <div class="phase clickable-node" data-target-slide="6"><div><small>05</small>TEST</div></div>
+                <div class="phase clickable-node" data-target-slide="7"><div><small>06</small>USER TRYOUT</div></div>
+                <div class="phase clickable-node" data-target-slide="8"><div><small>07</small>GO LIVE</div></div>
+                <div class="phase clickable-node" data-target-slide="9"><div><small>08</small>CARE</div></div>
+              </div>
+            </div>
+
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+              <div class="card clickable-node" data-target-slide="2" style="padding: 20px; cursor: pointer;">
+                <h3><i class="fa-solid fa-flag"></i> 01 Getting Started</h3>
+                <p style="font-size: 0.9rem; color: var(--md-sys-color-muted); margin: 0;">Team introductions, goal alignment, and project kickoff.</p>
+              </div>
+              <div class="card clickable-node" data-target-slide="3" style="padding: 20px; cursor: pointer;">
+                <h3><i class="fa-solid fa-magnifying-glass"></i> 02 Understanding Needs</h3>
+                <p style="font-size: 0.9rem; color: var(--md-sys-color-muted); margin: 0;">Learning daily pain points, workflows, and business goals.</p>
+              </div>
+              <div class="card clickable-node" data-target-slide="4" style="padding: 20px; cursor: pointer;">
+                <h3><i class="fa-solid fa-compass-drafting"></i> 03 Design &amp; Architecture</h3>
+                <p style="font-size: 0.9rem; color: var(--md-sys-color-muted); margin: 0;">Planning screens, AI behavior, and data safety rules.</p>
+              </div>
+              <div class="card clickable-node" data-target-slide="5" style="padding: 20px; cursor: pointer;">
+                <h3><i class="fa-solid fa-code"></i> 04 Building &amp; Integration</h3>
+                <p style="font-size: 0.9rem; color: var(--md-sys-color-muted); margin: 0;">Coding the application, training knowledge, and connecting systems.</p>
+              </div>
+              <div class="card clickable-node" data-target-slide="6" style="padding: 20px; cursor: pointer;">
+                <h3><i class="fa-solid fa-vial-circle-check"></i> 05 Quality Testing</h3>
+                <p style="font-size: 0.9rem; color: var(--md-sys-color-muted); margin: 0;">Checking accuracy, speed, and AI answer safety.</p>
+              </div>
+              <div class="card clickable-node" data-target-slide="7" style="padding: 20px; cursor: pointer;">
+                <h3><i class="fa-solid fa-users"></i> 06 Real User Testing</h3>
+                <p style="font-size: 0.9rem; color: var(--md-sys-color-muted); margin: 0;">Hands-on trial with actual users for feedback and sign-off.</p>
+              </div>
+              <div class="card clickable-node" data-target-slide="8" style="padding: 20px; cursor: pointer;">
+                <h3><i class="fa-solid fa-cloud-arrow-up"></i> 07 Going Live</h3>
+                <p style="font-size: 0.9rem; color: var(--md-sys-color-muted); margin: 0;">Launching the solution safely for daily enterprise use.</p>
+              </div>
+              <div class="card clickable-node" data-target-slide="9" style="padding: 20px; cursor: pointer;">
+                <h3><i class="fa-solid fa-heart-pulse"></i> 08 Support &amp; Care</h3>
+                <p style="font-size: 0.9rem; color: var(--md-sys-color-muted); margin: 0;">Ongoing post-launch guidance, fine-tuning, and help.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 03: PHASE 01 - GETTING STARTED -->
+    <section class="slide">
+      <div class="layout">
+        <div class="content">
+          <div class="detail-wrap">
+            <div class="flow">
+              <div class="timeline">
+                <div class="phase bump clickable-node" data-target-slide="2"><div><small>01</small>GET STARTED</div></div>
+                <div class="phase clickable-node" data-target-slide="3"><div><small>02</small>UNDERSTAND</div></div>
+                <div class="phase clickable-node" data-target-slide="4"><div><small>03</small>DESIGN</div></div>
+                <div class="phase clickable-node" data-target-slide="5"><div><small>04</small>BUILD</div></div>
+                <div class="phase clickable-node" data-target-slide="6"><div><small>05</small>TEST</div></div>
+                <div class="phase clickable-node" data-target-slide="7"><div><small>06</small>USER TRYOUT</div></div>
+                <div class="phase clickable-node" data-target-slide="8"><div><small>07</small>GO LIVE</div></div>
+                <div class="phase clickable-node" data-target-slide="9"><div><small>08</small>CARE</div></div>
+              </div>
+            </div>
+
+            <div class="eyebrow">Phase 01</div>
+            <h1 class="headline">GETTING STARTED</h1>
+            <span class="subtitle-badge">FORMERLY: MOBILISE</span>
+            <p class="description">Setting up our project foundation, introducing the team, and agreeing on clear goals and ways of working together.</p>
+
+            <div class="grid">
+              <div class="card">
+                <h3><i class="fa-solid fa-list-check"></i> What We Do Here</h3>
+                <ul>
+                  <li>Host a project launch meeting to introduce everyone on the team.</li>
+                  <li>Agree on clear business objectives and what success looks like.</li>
+                  <li>Identify key decision-makers and subject matter experts.</li>
+                  <li>Establish convenient team check-in schedules and communication tools.</li>
+                </ul>
+              </div>
+              <div class="card">
+                <h3><i class="fa-solid fa-box-open"></i> What You Get (Clear Deliverables)</h3>
+                <div class="chip-row">
+                  <span class="chip"><i class="fa-solid fa-file-powerpoint"></i> Kickoff Deck &amp; Overview</span>
+                  <span class="chip"><i class="fa-solid fa-file-contract"></i> Project Scope Charter</span>
+                  <span class="chip"><i class="fa-solid fa-users-gear"></i> Team Roles &amp; Decision Map</span>
+                  <span class="chip"><i class="fa-solid fa-calendar-days"></i> Project Communication Plan</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 04: PHASE 02 - UNDERSTANDING NEEDS -->
+    <section class="slide">
+      <div class="layout">
+        <div class="content">
+          <div class="detail-wrap">
+            <div class="flow">
+              <div class="timeline">
+                <div class="phase clickable-node" data-target-slide="2"><div><small>01</small>GET STARTED</div></div>
+                <div class="phase bump clickable-node" data-target-slide="3"><div><small>02</small>UNDERSTAND</div></div>
+                <div class="phase clickable-node" data-target-slide="4"><div><small>03</small>DESIGN</div></div>
+                <div class="phase clickable-node" data-target-slide="5"><div><small>04</small>BUILD</div></div>
+                <div class="phase clickable-node" data-target-slide="6"><div><small>05</small>TEST</div></div>
+                <div class="phase clickable-node" data-target-slide="7"><div><small>06</small>USER TRYOUT</div></div>
+                <div class="phase clickable-node" data-target-slide="8"><div><small>07</small>GO LIVE</div></div>
+                <div class="phase clickable-node" data-target-slide="9"><div><small>08</small>CARE</div></div>
+              </div>
+            </div>
+
+            <div class="eyebrow">Phase 02</div>
+            <h1 class="headline">UNDERSTANDING NEEDS</h1>
+            <span class="subtitle-badge">FORMERLY: DISCOVERY</span>
+            <p class="description">Listening to everyday users and reviewing existing processes to ensure we solve the right problems in the simplest way.</p>
+
+            <div class="grid">
+              <div class="card">
+                <h3><i class="fa-solid fa-list-check"></i> What We Do Here</h3>
+                <ul>
+                  <li>Run friendly interactive workshops with people who will use the system daily.</li>
+                  <li>Map out current daily routines, pain points, and repetitive tasks.</li>
+                  <li>Review company documents, existing software, and privacy policies.</li>
+                  <li>Pick the highest-value features to focus on for our first version.</li>
+                </ul>
+              </div>
+              <div class="card">
+                <h3><i class="fa-solid fa-box-open"></i> What You Get (Clear Deliverables)</h3>
+                <div class="chip-row">
+                  <span class="chip"><i class="fa-solid fa-diagram-project"></i> Current Workflows Map</span>
+                  <span class="chip"><i class="fa-solid fa-file-lines"></i> Business Requirements Document</span>
+                  <span class="chip"><i class="fa-solid fa-network-wired"></i> Existing Systems Overview</span>
+                  <span class="chip"><i class="fa-solid fa-list-ol"></i> Prioritised Feature Wishlist</span>
+                  <span class="chip"><i class="fa-solid fa-bullseye"></i> Key Success Indicators</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 05: PHASE 03 - DESIGN & ARCHITECTURE -->
+    <section class="slide">
+      <div class="layout">
+        <div class="content">
+          <div class="detail-wrap">
+            <div class="flow">
+              <div class="timeline">
+                <div class="phase clickable-node" data-target-slide="2"><div><small>01</small>GET STARTED</div></div>
+                <div class="phase clickable-node" data-target-slide="3"><div><small>02</small>UNDERSTAND</div></div>
+                <div class="phase bump clickable-node" data-target-slide="4"><div><small>03</small>DESIGN</div></div>
+                <div class="phase clickable-node" data-target-slide="5"><div><small>04</small>BUILD</div></div>
+                <div class="phase clickable-node" data-target-slide="6"><div><small>05</small>TEST</div></div>
+                <div class="phase clickable-node" data-target-slide="7"><div><small>06</small>USER TRYOUT</div></div>
+                <div class="phase clickable-node" data-target-slide="8"><div><small>07</small>GO LIVE</div></div>
+                <div class="phase clickable-node" data-target-slide="9"><div><small>08</small>CARE</div></div>
+              </div>
+            </div>
+
+            <div class="eyebrow">Phase 03</div>
+            <h1 class="headline">DESIGN &amp; ARCHITECTURE</h1>
+            <span class="subtitle-badge">FORMERLY: DESIGN &amp; PLAN</span>
+            <p class="description">Creating easy-to-use screen layouts and planning how the AI will safely access information to give accurate answers.</p>
+
+            <div class="grid">
+              <div class="card">
+                <h3><i class="fa-solid fa-list-check"></i> What We Do Here</h3>
+                <ul>
+                  <li>Design visual screen mockups and step-by-step user paths.</li>
+                  <li>Write clear plain-language descriptions of every feature to be built.</li>
+                  <li>Plan how the AI assistant searches company documents accurately.</li>
+                  <li>Establish strict safety, permission, and content guardrails.</li>
+                </ul>
+              </div>
+              <div class="card">
+                <h3><i class="fa-solid fa-box-open"></i> What You Get (Clear Deliverables)</h3>
+                <div class="chip-row">
+                  <span class="chip"><i class="fa-solid fa-shoe-prints"></i> Step-by-Step User Journeys</span>
+                  <span class="chip"><i class="fa-solid fa-laptop"></i> Interactive Screen Blueprints</span>
+                  <span class="chip"><i class="fa-solid fa-book-open"></i> Detailed User Feature Guides</span>
+                  <span class="chip"><i class="fa-solid fa-sitemap"></i> AI Knowledge Architecture Map</span>
+                  <span class="chip"><i class="fa-solid fa-shield-cat"></i> Safety &amp; Privacy Ruleset</span>
+                  <span class="chip"><i class="fa-solid fa-signature"></i> Final Design Approval Sign-Off</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 06: PHASE 04 - BUILDING & INTEGRATION -->
+    <section class="slide">
+      <div class="layout">
+        <div class="content">
+          <div class="detail-wrap">
+            <div class="flow">
+              <div class="timeline">
+                <div class="phase clickable-node" data-target-slide="2"><div><small>01</small>GET STARTED</div></div>
+                <div class="phase clickable-node" data-target-slide="3"><div><small>02</small>UNDERSTAND</div></div>
+                <div class="phase clickable-node" data-target-slide="4"><div><small>03</small>DESIGN</div></div>
+                <div class="phase bump clickable-node" data-target-slide="5"><div><small>04</small>BUILD</div></div>
+                <div class="phase clickable-node" data-target-slide="6"><div><small>05</small>TEST</div></div>
+                <div class="phase clickable-node" data-target-slide="7"><div><small>06</small>USER TRYOUT</div></div>
+                <div class="phase clickable-node" data-target-slide="8"><div><small>07</small>GO LIVE</div></div>
+                <div class="phase clickable-node" data-target-slide="9"><div><small>08</small>CARE</div></div>
+              </div>
+            </div>
+
+            <div class="eyebrow">Phase 04</div>
+            <h1 class="headline">BUILDING &amp; INTEGRATION</h1>
+            <span class="subtitle-badge">FORMERLY: DEVELOP</span>
+            <p class="description">Writing the application code, connecting company data sources, and building responsive screens in two-week cycles.</p>
+
+            <div class="grid">
+              <div class="card">
+                <h3><i class="fa-solid fa-list-check"></i> What We Do Here</h3>
+                <ul>
+                  <li>Construct screen interfaces and server infrastructure step-by-step.</li>
+                  <li>Upload enterprise knowledge documents and configure search capability.</li>
+                  <li>Connect the AI system securely to your existing software tools.</li>
+                  <li>Show you working progress demos every two weeks for early feedback.</li>
+                </ul>
+              </div>
+              <div class="card">
+                <h3><i class="fa-solid fa-box-open"></i> What You Get (Clear Deliverables)</h3>
+                <div class="chip-row">
+                  <span class="chip"><i class="fa-solid fa-code"></i> Source Code Repository</span>
+                  <span class="chip"><i class="fa-solid fa-gears"></i> Automated Build Pipeline</span>
+                  <span class="chip"><i class="fa-solid fa-brain"></i> Working AI Knowledge Engine</span>
+                  <span class="chip"><i class="fa-solid fa-plug"></i> Connected System Connectors</span>
+                  <span class="chip"><i class="fa-solid fa-lock"></i> Built-in Access Safeguards</span>
+                  <span class="chip"><i class="fa-solid fa-bug-slash"></i> Weekly Progress Status Log</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 07: PHASE 05 - QUALITY TESTING -->
+    <section class="slide">
+      <div class="layout">
+        <div class="content">
+          <div class="detail-wrap">
+            <div class="flow">
+              <div class="timeline">
+                <div class="phase clickable-node" data-target-slide="2"><div><small>01</small>GET STARTED</div></div>
+                <div class="phase clickable-node" data-target-slide="3"><div><small>02</small>UNDERSTAND</div></div>
+                <div class="phase clickable-node" data-target-slide="4"><div><small>03</small>DESIGN</div></div>
+                <div class="phase clickable-node" data-target-slide="5"><div><small>04</small>BUILD</div></div>
+                <div class="phase bump clickable-node" data-target-slide="6"><div><small>05</small>TEST</div></div>
+                <div class="phase clickable-node" data-target-slide="7"><div><small>06</small>USER TRYOUT</div></div>
+                <div class="phase clickable-node" data-target-slide="8"><div><small>07</small>GO LIVE</div></div>
+                <div class="phase clickable-node" data-target-slide="9"><div><small>08</small>CARE</div></div>
+              </div>
+            </div>
+
+            <div class="eyebrow">Phase 05</div>
+            <h1 class="headline">QUALITY TESTING</h1>
+            <span class="subtitle-badge">FORMERLY: QA</span>
+            <p class="description">Thoroughly testing performance, security, and response accuracy to fix any issues before real people try the system.</p>
+
+            <div class="grid">
+              <div class="card">
+                <h3><i class="fa-solid fa-list-check"></i> What We Do Here</h3>
+                <ul>
+                  <li>Test every screen button, input form, and process flow.</li>
+                  <li>Ask the AI hundreds of test questions to verify accuracy and truthfulness.</li>
+                  <li>Check response speeds and make sure private information stays private.</li>
+                  <li>Log any glitches found and fix them until everything runs smoothly.</li>
+                </ul>
+              </div>
+              <div class="card">
+                <h3><i class="fa-solid fa-box-open"></i> What You Get (Clear Deliverables)</h3>
+                <div class="chip-row">
+                  <span class="chip"><i class="fa-solid fa-vial"></i> Master Quality Test Plan</span>
+                  <span class="chip"><i class="fa-solid fa-square-check"></i> System Testing Results</span>
+                  <span class="chip"><i class="fa-solid fa-list-check"></i> Issue Tracking &amp; Fix Report</span>
+                  <span class="chip"><i class="fa-solid fa-shield-virus"></i> AI Accuracy &amp; Safety Audit</span>
+                  <span class="chip"><i class="fa-solid fa-circle-check"></i> Technical Readiness Sign-Off</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 08: PHASE 06 - REAL USER TESTING -->
+    <section class="slide">
+      <div class="layout">
+        <div class="content">
+          <div class="detail-wrap">
+            <div class="flow">
+              <div class="timeline">
+                <div class="phase clickable-node" data-target-slide="2"><div><small>01</small>GET STARTED</div></div>
+                <div class="phase clickable-node" data-target-slide="3"><div><small>02</small>UNDERSTAND</div></div>
+                <div class="phase clickable-node" data-target-slide="4"><div><small>03</small>DESIGN</div></div>
+                <div class="phase clickable-node" data-target-slide="5"><div><small>04</small>BUILD</div></div>
+                <div class="phase clickable-node" data-target-slide="6"><div><small>05</small>TEST</div></div>
+                <div class="phase bump clickable-node" data-target-slide="7"><div><small>06</small>USER TRYOUT</div></div>
+                <div class="phase clickable-node" data-target-slide="8"><div><small>07</small>GO LIVE</div></div>
+                <div class="phase clickable-node" data-target-slide="9"><div><small>08</small>CARE</div></div>
+              </div>
+            </div>
+
+            <div class="eyebrow">Phase 06</div>
+            <h1 class="headline">REAL USER TESTING</h1>
+            <span class="subtitle-badge">FORMERLY: UAT</span>
+            <p class="description">Inviting actual business users to try out the solution with real work scenarios and provide honest feedback.</p>
+
+            <div class="grid">
+              <div class="card">
+                <h3><i class="fa-solid fa-list-check"></i> What We Do Here</h3>
+                <ul>
+                  <li>Guide chosen team members through hands-on testing sessions.</li>
+                  <li>Observe how people interact with the AI assistant during real tasks.</li>
+                  <li>Incorporate user ideas to make the system even easier and friendlier to use.</li>
+                  <li>Prepare easy-to-read training guides and simple video tutorials.</li>
+                </ul>
+              </div>
+              <div class="card">
+                <h3><i class="fa-solid fa-box-open"></i> What You Get (Clear Deliverables)</h3>
+                <div class="chip-row">
+                  <span class="chip"><i class="fa-solid fa-clipboard-user"></i> Hands-on User Tryout Guides</span>
+                  <span class="chip"><i class="fa-solid fa-comment-dots"></i> User Feedback Summary Log</span>
+                  <span class="chip"><i class="fa-solid fa-graduation-cap"></i> Training Guides &amp; Handouts</span>
+                  <span class="chip"><i class="fa-solid fa-file-signature"></i> Final Business Launch Sign-Off</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 09: PHASE 07 - GOING LIVE -->
+    <section class="slide">
+      <div class="layout">
+        <div class="content">
+          <div class="detail-wrap">
+            <div class="flow">
+              <div class="timeline">
+                <div class="phase clickable-node" data-target-slide="2"><div><small>01</small>GET STARTED</div></div>
+                <div class="phase clickable-node" data-target-slide="3"><div><small>02</small>UNDERSTAND</div></div>
+                <div class="phase clickable-node" data-target-slide="4"><div><small>03</small>DESIGN</div></div>
+                <div class="phase clickable-node" data-target-slide="5"><div><small>04</small>BUILD</div></div>
+                <div class="phase clickable-node" data-target-slide="6"><div><small>05</small>TEST</div></div>
+                <div class="phase clickable-node" data-target-slide="7"><div><small>06</small>USER TRYOUT</div></div>
+                <div class="phase bump clickable-node" data-target-slide="8"><div><small>07</small>GO LIVE</div></div>
+                <div class="phase clickable-node" data-target-slide="9"><div><small>08</small>CARE</div></div>
+              </div>
+            </div>
+
+            <div class="eyebrow">Phase 07</div>
+            <h1 class="headline">GOING LIVE</h1>
+            <span class="subtitle-badge">FORMERLY: LAUNCH / GO-LIVE</span>
+            <p class="description">Carefully releasing the tested solution to everyone, ensuring user accounts are active and help is readily available.</p>
+
+            <div class="grid">
+              <div class="card">
+                <h3><i class="fa-solid fa-list-check"></i> What We Do Here</h3>
+                <ul>
+                  <li>Perform final security and operational readiness safety checks.</li>
+                  <li>Safely push the system into live production servers.</li>
+                  <li>Run immediate live spot-checks to ensure all connections work smoothly.</li>
+                  <li>Send launch announcements, open user access, and activate help desks.</li>
+                </ul>
+              </div>
+              <div class="card">
+                <h3><i class="fa-solid fa-box-open"></i> What You Get (Clear Deliverables)</h3>
+                <div class="chip-row">
+                  <span class="chip"><i class="fa-solid fa-rocket"></i> Live Working Production System</span>
+                  <span class="chip"><i class="fa-solid fa-clipboard-check"></i> Final Launch Checklist</span>
+                  <span class="chip"><i class="fa-solid fa-headset"></i> Support Team Guidebook</span>
+                  <span class="chip"><i class="fa-solid fa-award"></i> Official Launch Confirmation</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: PHASE 08 - SUPPORT & CARE -->
+    <section class="slide">
+      <div class="layout">
+        <div class="content">
+          <div class="detail-wrap">
+            <div class="flow">
+              <div class="timeline">
+                <div class="phase clickable-node" data-target-slide="2"><div><small>01</small>GET STARTED</div></div>
+                <div class="phase clickable-node" data-target-slide="3"><div><small>02</small>UNDERSTAND</div></div>
+                <div class="phase clickable-node" data-target-slide="4"><div><small>03</small>DESIGN</div></div>
+                <div class="phase clickable-node" data-target-slide="5"><div><small>04</small>BUILD</div></div>
+                <div class="phase clickable-node" data-target-slide="6"><div><small>05</small>TEST</div></div>
+                <div class="phase clickable-node" data-target-slide="7"><div><small>06</small>USER TRYOUT</div></div>
+                <div class="phase clickable-node" data-target-slide="8"><div><small>07</small>GO LIVE</div></div>
+                <div class="phase bump clickable-node" data-target-slide="9"><div><small>08</small>CARE</div></div>
+              </div>
+            </div>
+
+            <div class="eyebrow">Phase 08</div>
+            <h1 class="headline">SUPPORT &amp; CARE</h1>
+            <span class="subtitle-badge">FORMERLY: HYPERCARE</span>
+            <p class="description">Staying right beside you after launch to answer questions, monitor quality, and fine-tune answers as users adopt it.</p>
+
+            <div class="grid">
+              <div class="card">
+                <h3><i class="fa-solid fa-list-check"></i> What We Do Here</h3>
+                <ul>
+                  <li>Provide dedicated rapid-response support for any initial user questions.</li>
+                  <li>Monitor daily AI answer quality and user adoption rates.</li>
+                  <li>Fine-tune AI prompts and update knowledge documents whenever needed.</li>
+                  <li>Smoothly transition long-term maintenance to your internal support desk.</li>
+                </ul>
+              </div>
+              <div class="card">
+                <h3><i class="fa-solid fa-box-open"></i> What You Get (Clear Deliverables)</h3>
+                <div class="chip-row">
+                  <span class="chip"><i class="fa-solid fa-shield-heart"></i> Post-Launch Priority Support</span>
+                  <span class="chip"><i class="fa-solid fa-chart-line"></i> AI Quality &amp; Usage Reports</span>
+                  <span class="chip"><i class="fa-solid fa-lightbulb"></i> Team Lessons Learned Summary</span>
+                  <span class="chip"><i class="fa-solid fa-handshake-angle"></i> Smooth Handover to Regular Support</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROGRESS COUNTER & CONTROLS -->
+    <div class="progress" id="progress">01 / 10</div>
+    <div class="controls">
+      <button id="prevBtn" type="button"><i class="fa-solid fa-chevron-left"></i> Previous</button>
+      <button id="nextBtn" type="button">Next <i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const progress = document.getElementById('progress');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let current = 0;
+
+    function renderSlide(index) {
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+      progress.textContent = `${String(index + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+    }
+
+    function showNext() {
+      current = (current + 1) % slides.length;
+      renderSlide(current);
+    }
+
+    function showPrev() {
+      current = (current - 1 + slides.length) % slides.length;
+      renderSlide(current);
+    }
+
+    nextBtn.addEventListener('click', showNext);
+    prevBtn.addEventListener('click', showPrev);
+
+    // Direct jump via timeline & overview card nodes
+    document.querySelectorAll('.clickable-node').forEach(node => {
+      node.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const targetIndex = parseInt(node.getAttribute('data-target-slide'), 10);
+        if (!isNaN(targetIndex) && targetIndex >= 0 && targetIndex < slides.length) {
+          current = targetIndex;
+          renderSlide(current);
+        }
+      });
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') {
+        showNext();
+      }
+      if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+        showPrev();
+      }
+      if (event.key === 'Home') {
+        current = 0;
+        renderSlide(current);
+      }
+      if (event.key === 'End') {
+        current = slides.length - 1;
+        renderSlide(current);
+      }
+    });
+
+    // Touch swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      if (touchEndX < touchStartX - swipeThreshold) {
+        showNext();
+      } else if (touchEndX > touchStartX + swipeThreshold) {
+        showPrev();
+      }
+    }
+
+    // Initial render
+    renderSlide(current);
+  </script>
+</body>
+</html>
